@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import sys
 from skimage import img_as_float, img_as_ubyte
+from PIL import Image
 
 
 class FaceSet(object):
@@ -15,7 +16,7 @@ class FaceSet(object):
 
     def load_images(self):
         self.jpegs = glob.glob(self.directory + '/*.jpeg')
-        imgs = np.array([cv2.imread(i, 1) for i in self.jpegs])
+        imgs = np.array([cv2.imread(i, 0) for i in self.jpegs])
         self.imgs = imgs
 
     def info(self):
@@ -34,8 +35,7 @@ class FaceSet(object):
     def recenter(self):
         images = self.imgs
         for (i, image) in enumerate(images):
-            r, c = image.shape[0], image.shape[1]
-            images[i] = image.flatten()[int((r*c - self.min_rows*self.min_cols)/2):int((r*c + self.min_rows*self.min_cols)/2)]
+            images[i] = image[0: self.min_rows, 0:self.min_cols].flatten()
         self.imgs = images
     
     def get_average(self):
@@ -43,7 +43,16 @@ class FaceSet(object):
         for (i, image) in enumerate(self.imgs):
             images[i] = img_as_float(image)
         self.average = img_as_ubyte(np.average(images))
-        return self.average
+        
+    def show_average(self):
+        av = self.average.reshape(self.min_rows, self.min_cols)
+        img = Image.fromarray(av)
+        return img
+    
+    
+
+        
+
         
     
             
