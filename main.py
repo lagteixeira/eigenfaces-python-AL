@@ -13,6 +13,7 @@ class FaceSet(object):
         self.info()
         self.recenter()
         self.get_average()
+        self.center_points()
 
     def load_images(self):
         self.jpegs = glob.glob(self.directory + '/*.jpeg')
@@ -38,6 +39,7 @@ class FaceSet(object):
             images[i] = image[0: self.min_rows, 0:self.min_cols].flatten()
         self.imgs = images
     
+    
     def get_average(self):
         images = self.imgs
         for (i, image) in enumerate(self.imgs):
@@ -48,6 +50,14 @@ class FaceSet(object):
         av = self.average.reshape(self.min_rows, self.min_cols)
         img = Image.fromarray(av)
         return img
+    
+    def center_points(self):
+        images = self.imgs
+        av = img_as_float(self.average)
+        for(i, image) in enumerate(self.imgs):
+            images[i] = img_as_ubyte(img_as_float(image) - av)
+        self.center_images = images
+        
     
     
 
